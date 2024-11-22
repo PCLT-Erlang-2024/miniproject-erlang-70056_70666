@@ -4,7 +4,7 @@
 
 new_truck(OperationNumber, FleetManagerPID) -> #{
            id => OperationNumber,
-           capacity => 10,
+           capacity => 5,
            current_load => 0,
            belt_num => OperationNumber,
            manager_pid => FleetManagerPID 
@@ -76,7 +76,7 @@ belt_operation(ActiveTruckPID, OperationNumber) ->
     end.
 
 package_generator(BeltPID, BeltNum) ->
-    io:format("[Package Generator] New Package for Belt: ~p~n", [BeltNum]),
+    io:format("[Task 1 - Package Generator] New Package for Belt: ~p~n", [BeltNum]),
     Package = #{id => lists:flatten(io_lib:format("Belt~p-Package~p", [BeltNum, rand:uniform(1000)])), 
                 size => 1},
     BeltPID ! {package, Package},
