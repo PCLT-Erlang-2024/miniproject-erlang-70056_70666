@@ -1,4 +1,4 @@
--module(factory).
+-module(task1).
 -export([start/0, fleet_manager/1, start_operation/2, new_truck/2, truck_operation/1, belt_operation/2,  package_generator/2, allocate_truck/3]).
 
 
@@ -11,7 +11,7 @@ new_truck(OperationNumber, FleetManagerPID) -> #{
        }.
 
 allocate_truck(FleetState, BeltNumber, NewTruck) ->
-    TruckPid = spawn(factory, truck_operation, [NewTruck]),
+    TruckPid = spawn(task1, truck_operation, [NewTruck]),
     BeltPids = maps:get(belts_pids, FleetState, #{}),
     case maps:find(BeltNumber, BeltPids) of
         {ok, BeltPID} -> BeltPID ! {new_truck, TruckPid};
@@ -86,13 +86,13 @@ package_generator(BeltPID, BeltNum) ->
 
 start_operation(OperationNumber, FleetManagerPID) ->
     io:format("[Conveyor Operation] Starting Operation ~p~n", [OperationNumber]),
-    ActiveTruckPID = spawn(factory, truck_operation, [new_truck(OperationNumber, FleetManagerPID)]),
+    ActiveTruckPID = spawn(task1, truck_operation, [new_truck(OperationNumber, FleetManagerPID)]),
     io:format("[Conveyor Operation] Started Truck Operation ~p~n", [ActiveTruckPID]),
-    ActiveBeltPID = spawn(factory, belt_operation, [ActiveTruckPID, OperationNumber]),
+    ActiveBeltPID = spawn(task1, belt_operation, [ActiveTruckPID, OperationNumber]),
     io:format("[Conveyor Operation] Started Belt Operation ~p~n", [ActiveBeltPID]),
     FleetManagerPID ! {conveyor_belt, OperationNumber, ActiveBeltPID},
     io:format("[Conveyor Operation] Belt Operation Set~n"),
-    PackageGeneratorPID = spawn(factory, package_generator, [ActiveBeltPID, OperationNumber]),
+    PackageGeneratorPID = spawn(task1, package_generator, [ActiveBeltPID, OperationNumber]),
     io:format("[Conveyor Operation] Package Generator Set ~p~n", [PackageGeneratorPID]),
     [ActiveTruckPID, ActiveBeltPID, PackageGeneratorPID].
 
@@ -101,7 +101,7 @@ start() ->
     io:format("[Factory] Starting Factory~n"),
     timer:sleep(1000),
 
-    FleetManagerPID = spawn(factory, fleet_manager, [#{trucks => #{}, belts_pids => #{}}]),
+    FleetManagerPID = spawn(task1, fleet_manager, [#{trucks => #{}, belts_pids => #{}}]),
     io:format("[Factory] Spawned Fleet Manager~p~n", [FleetManagerPID]),
     timer:sleep(1000),
 
