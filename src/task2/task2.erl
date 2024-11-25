@@ -37,7 +37,7 @@ belt_loader({ID, LoadingBay}) ->
 
 loop_loader(ID, LoadingBay, PID) ->
     timer:sleep(2500),
-    Size = 1,
+    Size = rand:uniform(5),
     io:format("[PACKAGE LOADER ~p]: Package belt_~p_~p sent to loading bay~n", [ID, ID, PID+1]),
     LoadingBay ! {self(), package, ID, PID+1, Size},
     loop_loader(ID, LoadingBay, PID+1).
@@ -54,17 +54,17 @@ loop_bay(ID, Belts, Capacity, Package) ->
     % If no truck is assigned yet, request one.
     CurrCapacity = case Capacity of
         null ->
-            io:format("[LOADING BAY ~p]: No truck available, ~p is requesting one~n", [ID, self()]),
+            io:format("[LOADING BAY (~p, ~p)]: No truck available, requesting one~n", [ID, self()]),
             truck_generator ! {self(), request_truck},
             receive
                 {SenderID, Cap} -> 
-                    io:format("[LOADING BAY ~p]: Received truck with ~p capacity from ~p~n",[ID, Cap, SenderID]),
-                    loop_bay(ID, Belts, Cap, null);
+                    io:format("[LOADING BAY (~p, ~p)]: Received truck with ~p capacity from ~p~n",[ID, self(), Cap, SenderID]),
+                    loop_bay(ID, Belts, Cap, Package);
                 stop ->
-                    io:format("[LOADING BAY ~p]: stopping~n", [ID])
+                    io:format("[LOADING BAY (~p, ~p)]: stopping~n", [ID, self()])
             end;
         Capacity when is_number(Capacity) ->
-            io:format("[LOADING BAY ~p]: Truck with ~p capacity~n", [ID, Capacity]),
+            io:format("[LOADING BAY (~p, ~p)]: Truck with ~p capacity~n", [ID, self(), Capacity]),
             Capacity
     end,
 
@@ -74,23 +74,23 @@ loop_bay(ID, Belts, Capacity, Package) ->
                 {_, package, BeltID, PID, Size} ->
                     if
                         CurrCapacity - Size < 0 ->
-                            io:format("[LOADING BAY ~p]: Truck full - shipped~n", [ID]),
+                            io:format("[LOADING BAY (~p, ~p)]: Truck full - shipped~n", [ID, self()]),
                             loop_bay(ID, Belts, null, {BeltID, PID, Size});
                         true ->
-                            io:format("[LOADING BAY ~p]: Package loaded onto truck on belt | CurrentCapacity: ~p~n",[ID, CurrCapacity - Size]),
+                            io:format("[LOADING BAY (~p, ~p)]: Package loaded onto truck on belt | CurrentCapacity: ~p~n",[ID, self(), CurrCapacity - Size]),
                             loop_bay(ID, Belts, CurrCapacity - Size, null)
                     end;
                 stop ->
-                    io:format("[LOADING BAY ~p]: Loading bay stopping~n", [ID])
+                    io:format("[LOADING BAY (~p, ~p)]: Loading bay stopping~n", [ID, self()])
             end;
         % Pending package
         {BeltID, PID, Size} ->
             if
                 CurrCapacity - Size < 0 ->
-                    io:format("[LOADING BAY ~p]: Truck shipped~n", [ID]),
+                    io:format("[LOADING BAY (~p, ~p)]: Truck shipped~n", [ID, self()]),
                     loop_bay(ID, Belts, null, {BeltID, PID, Size});
                 true ->
-                    io:format("[LOADING BAY ~p]: Pending package loaded onto truck~n",[ID]),
+                    io:format("[LOADING BAY (~p, ~p)]: Pending package loaded onto truck~n",[ID, self()]),
                     loop_bay(ID, Belts, CurrCapacity - Size, null)
             end
     end.

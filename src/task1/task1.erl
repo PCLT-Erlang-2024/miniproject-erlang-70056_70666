@@ -59,7 +59,7 @@ loop_bay(ID, Belts, Capacity, Package) ->
             receive
                 {SenderID, Cap} -> 
                     io:format("[LOADING BAY ~p]: Received truck with ~p capacity from ~p~n",[ID, Cap, SenderID]),
-                    loop_bay(ID, Belts, Cap, null);
+                    loop_bay(ID, Belts, Cap, Package);
                 stop ->
                     io:format("[LOADING BAY ~p]: stopping~n", [ID])
             end;
