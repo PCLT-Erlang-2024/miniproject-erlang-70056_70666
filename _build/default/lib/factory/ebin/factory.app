@@ -4,6 +4,6 @@
               {registered,[]},
               {applications,[kernel,stdlib]},
               {env,[]},
-              {modules,[task1,task2,task3]},
+              {modules,[factory_task1,task1,task2,task3]},
               {licenses,["Apache-2.0"]},
               {links,[]}]}.
