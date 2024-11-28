@@ -1,0 +1,14 @@
+Checking sync
+Checking sync_notify
+Checking sync_options
+Checking sync_scanner
+Checking sync_utils
+Checking pc
+Checking pc_compilation
+Checking pc_port_env
+Checking pc_port_specs
+Checking pc_prv_clean
+Checking pc_prv_compile
+Checking pc_util
+Checking events_stream
+Checking task3
