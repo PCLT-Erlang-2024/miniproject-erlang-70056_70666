@@ -1,4 +1,4 @@
-# Non-Instant Truck Replacement System: Correctness Analysis
+# Factory Simulation
 
 ## Overview
 Our factory simulation implements a realistic truck replacement system where full trucks take time to be replaced, requiring conveyor belts to pause temporarily. Here's how we ensure everything works correctly.
